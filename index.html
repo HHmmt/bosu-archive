@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>보수기술자 기출 아카이브</title>
+  <meta name="description" content="국가유산수리기술자 보수기술자 1교시 객관식 기출 아카이브 — 회차별 문항·보기별 해설·주제 빈출 분석" />
+  <meta name="theme-color" content="#FBF8F1" />
+  <style>
+    html, body { margin: 0; padding: 0; background: #FBF8F1; }
+    * { box-sizing: border-box; }
+    #root { min-height: 100vh; }
+    .__loading { max-width: 860px; margin: 0 auto; padding: 60px 20px;
+      font-family: -apple-system, "Noto Sans KR", sans-serif; color: #5C5448; font-size: 15px; }
+  </style>
+  <!-- React + Babel (브라우저 컴파일, 빌드 단계 없음) -->
+  <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+  <!-- 문항 데이터 (전역 window.QUESTIONS) -->
+  <script src="questions-data.js"></script>
+</head>
+<body>
+  <div id="root"><div class="__loading">불러오는 중…</div></div>
+  <script type="text/babel" data-presets="react">
+    const { useState, useMemo } = React;
+    const QUESTIONS = window.QUESTIONS || [];
+
+const SUBJECTS = ["전체", "국가유산관련법령", "한국건축사"];
+const C = {
+  paper: "#FBF8F1", ink: "#1F1B16", inkSoft: "#5C5448",
+  line: "#E3DCCB", noerok: "#3F6B58", noerokBg: "#EAF1EC",
+  seokganju: "#9A4B33", seokganjuBg: "#F6EAE4", card: "#FFFFFF",
+};
+
+function FreqBar({ topic, count, max, onClick, active }) {
+  return (
+    <button onClick={onClick} style={{
+      display: "block", width: "100%", background: "none", border: "none",
+      padding: "10px 0", cursor: "pointer", textAlign: "left",
+      borderBottom: `1px solid ${C.line}`,
+    }}>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+        <span style={{ fontSize: 14, fontWeight: active ? 700 : 500, color: active ? C.noerok : C.ink }}>{topic}</span>
+        <span style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 14, color: C.inkSoft }}>{count}문항</span>
+      </div>
+      <div style={{ height: 10, background: C.line, borderRadius: 2, overflow: "hidden" }}>
+        <div style={{ height: "100%", width: `${(count / max) * 100}%`,
+          background: active ? C.noerok : C.inkSoft, transition: "width .4s ease" }} />
+      </div>
+    </button>
+  );
+}
+
+function QuestionCard({ q, open, onToggle }) {
+  const [picked, setPicked] = useState(null);
+  const answered = picked !== null;
+  const correctSet = q.answers || [q.answer];
+  const isCorrect = (i) => correctSet.includes(i);
+  return (
+    <div style={{ background: C.card, border: `1px solid ${C.line}`, borderRadius: 8, marginBottom: 12, overflow: "hidden" }}>
+      <button onClick={onToggle} style={{ width: "100%", display: "flex", alignItems: "baseline", gap: 12,
+        padding: "14px 16px", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}>
+        <span style={{ fontFamily: "'Noto Serif KR', serif", fontWeight: 700, fontSize: 18, color: C.noerok, minWidth: 34 }}>{String(q.no).padStart(2, "0")}</span>
+        <span style={{ flex: 1, fontSize: 15, lineHeight: 1.5, color: C.ink }}>{q.question}</span>
+        <span style={{ fontSize: 11, color: C.inkSoft, border: `1px solid ${C.line}`, borderRadius: 99, padding: "2px 8px", whiteSpace: "nowrap" }}>{q.topic}</span>
+      </button>
+      {open && (
+        <div style={{ padding: "0 16px 16px 62px" }}>
+          {q.box && (
+            <div style={{ border: `1px solid ${C.line}`, borderRadius: 6, background: "#FCFAF5", padding: "10px 14px", margin: "0 0 14px" }}>
+              {q.box.map((line, i) => (
+                <p key={i} style={{ margin: "3px 0", fontSize: 14, lineHeight: 1.65, color: C.ink, whiteSpace: "pre-wrap" }}>{line}</p>
+              ))}
+            </div>
+          )}
+          {q.choices.map((c, i) => {
+            const isAns = isCorrect(i);
+            const isPicked = picked === i;
+            let border = C.line, bg = "transparent", mark = `${i + 1}`;
+            if (answered && isAns) { border = C.noerok; bg = C.noerokBg; mark = "○"; }
+            if (answered && isPicked && !isAns) { border = C.seokganju; bg = C.seokganjuBg; mark = "✕"; }
+            return (
+              <div key={i} style={{ marginBottom: 8 }}>
+                <button onClick={() => !answered && setPicked(i)} style={{ width: "100%", textAlign: "left", display: "flex", gap: 10,
+                  padding: "10px 12px", borderRadius: 6, cursor: answered ? "default" : "pointer",
+                  border: `1.5px solid ${border}`, background: bg, fontSize: 14.5, lineHeight: 1.5, color: C.ink }}>
+                  <span style={{ fontFamily: "'Noto Serif KR', serif", fontWeight: 700,
+                    color: answered && isAns ? C.noerok : answered && isPicked ? C.seokganju : C.inkSoft }}>{mark}</span>
+                  <span>{c}</span>
+                </button>
+                {answered && (
+                  <p style={{ margin: "6px 4px 0 30px", fontSize: 13.5, lineHeight: 1.6, color: isAns ? C.noerok : C.inkSoft }}>
+                    {isAns ? "정답 — " : "오답 — "}{q.explanations[i]}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+          {!answered ? (
+            <p style={{ fontSize: 13, color: C.inkSoft, margin: "10px 0 0" }}>보기를 선택하면 정답과 보기별 해설이 표시됩니다.</p>
+          ) : (
+            <button onClick={() => setPicked(null)} style={{ marginTop: 10, fontSize: 13, color: C.inkSoft, background: "none",
+              border: `1px solid ${C.line}`, borderRadius: 6, padding: "6px 12px", cursor: "pointer" }}>다시 풀기</button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ExamArchive() {
+  const rounds = useMemo(() => [...new Set(QUESTIONS.map((q) => q.round))].sort((a, b) => b - a), []);
+  const [tab, setTab] = useState("archive");
+  const [round, setRound] = useState(rounds[0]);
+  const [subject, setSubject] = useState("전체");
+  const [openId, setOpenId] = useState(null);
+  const [topicFilter, setTopicFilter] = useState(null);
+
+  // 주제 필터가 걸리면 회차 제한을 풀고 전 회차를 대상으로, 아니면 선택 회차만
+  const list = useMemo(() => QUESTIONS
+    .filter((q) => topicFilter ? true : q.round === round)
+    .filter((q) => subject === "전체" || q.subject === subject)
+    .filter((q) => !topicFilter || q.topic === topicFilter)
+    .sort((a, b) => (b.round - a.round) || (a.no - b.no)), [round, subject, topicFilter]);
+
+  // 주제 필터 모드일 때: 회차(연도)별로 묶어 연도 머리글과 함께 스크롤 표시
+  const grouped = useMemo(() => {
+    if (!topicFilter) return null;
+    const byRound = {};
+    list.forEach((q) => { (byRound[q.round] = byRound[q.round] || []).push(q); });
+    return Object.keys(byRound).map(Number).sort((a, b) => b - a)
+      .map((r) => ({ round: r, items: byRound[r] }));
+  }, [list, topicFilter]);
+
+  const freq = useMemo(() => {
+    const m = {};
+    QUESTIONS.filter((q) => subject === "전체" || q.subject === subject)
+      .forEach((q) => { m[q.topic] = (m[q.topic] || 0) + 1; });
+    return Object.entries(m).sort((a, b) => b[1] - a[1]);
+  }, [subject]);
+  const maxFreq = freq.length ? freq[0][1] : 1;
+  const yearOf = (r) => QUESTIONS.find((q) => q.round === r)?.year;
+
+  return (
+    <div style={{ minHeight: "100vh", background: C.paper, color: C.ink, fontFamily: "'Noto Sans KR', sans-serif" }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap');
+        button:focus-visible { outline: 2px solid ${C.noerok}; outline-offset: 2px; }`}</style>
+      <div style={{ maxWidth: 860, margin: "0 auto", padding: "32px 20px 60px" }}>
+        <header style={{ borderBottom: `3px solid ${C.ink}`, paddingBottom: 18, marginBottom: 4 }}>
+          <p style={{ margin: 0, fontSize: 12, letterSpacing: "0.18em", color: C.noerok, fontWeight: 700 }}>國家遺産修理技術者 · 補修</p>
+          <h1 style={{ margin: "6px 0 4px", fontFamily: "'Noto Serif KR', serif", fontWeight: 900, fontSize: 30, lineHeight: 1.2 }}>보수기술자 기출 아카이브</h1>
+          <p style={{ margin: 0, fontSize: 13.5, color: C.inkSoft }}>1교시 객관식 — 제38~44회 · 회차별 문항·보기별 해설·주제 빈출 분석 (38·39·40·41·42회는 한국건축사만 수록)</p>
+        </header>
+        <nav style={{ display: "flex", gap: 0, borderBottom: `1px solid ${C.line}`, marginBottom: 20 }}>
+          {[["archive", "기출 문제"], ["freq", "빈출 분석"]].map(([k, label]) => (
+            <button key={k} onClick={() => setTab(k)} style={{ padding: "12px 18px", background: "none", border: "none", cursor: "pointer",
+              fontSize: 15, fontWeight: tab === k ? 700 : 500, color: tab === k ? C.ink : C.inkSoft,
+              borderBottom: tab === k ? `3px solid ${C.noerok}` : "3px solid transparent", marginBottom: -1 }}>{label}</button>
+          ))}
+        </nav>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 18 }}>
+          {tab === "archive" && !topicFilter && rounds.map((r) => (
+            <button key={r} onClick={() => { setRound(r); setOpenId(null); }} style={{ padding: "7px 14px", borderRadius: 99, cursor: "pointer", fontSize: 13.5,
+              border: `1.5px solid ${round === r ? C.ink : C.line}`, background: round === r ? C.ink : "transparent",
+              color: round === r ? C.paper : C.inkSoft, fontWeight: 600 }}>제{r}회 ({yearOf(r)})</button>
+          ))}
+          {SUBJECTS.map((s) => (
+            <button key={s} onClick={() => { setSubject(s); setOpenId(null); setTopicFilter(null); }} style={{ padding: "7px 14px", borderRadius: 99, cursor: "pointer", fontSize: 13.5,
+              border: `1.5px solid ${subject === s ? C.noerok : C.line}`, background: subject === s ? C.noerokBg : "transparent",
+              color: subject === s ? C.noerok : C.inkSoft, fontWeight: 600 }}>{s}</button>
+          ))}
+          {topicFilter && (
+            <button onClick={() => setTopicFilter(null)} style={{ padding: "7px 14px", borderRadius: 99, cursor: "pointer", fontSize: 13.5,
+              border: `1.5px solid ${C.seokganju}`, background: C.seokganjuBg, color: C.seokganju, fontWeight: 600 }}>주제: {topicFilter} ✕</button>
+          )}
+        </div>
+        {tab === "archive" ? (
+          topicFilter ? (
+            <>
+              <p style={{ fontSize: 13, color: C.inkSoft, margin: "0 0 16px" }}>
+                주제 「{topicFilter}」 · 총 {list.length}문항 · 연도별로 묶어 표시합니다
+              </p>
+              {grouped.map(({ round: r, items }) => (
+                <section key={r} style={{ marginBottom: 28 }}>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 10, margin: "0 0 12px",
+                    paddingBottom: 6, borderBottom: `2px solid ${C.ink}` }}>
+                    <h2 style={{ margin: 0, fontFamily: "'Noto Serif KR', serif", fontWeight: 700, fontSize: 18, color: C.ink }}>
+                      제{r}회</h2>
+                    <span style={{ fontSize: 13, color: C.inkSoft }}>{yearOf(r)} · {items.length}문항</span>
+                  </div>
+                  {items.map((q) => (<QuestionCard key={q.id} q={q} open={openId === q.id}
+                    onToggle={() => setOpenId(openId === q.id ? null : q.id)} />))}
+                </section>
+              ))}
+              {list.length === 0 && (<p style={{ color: C.inkSoft, fontSize: 14 }}>해당 주제의 문항이 없습니다.</p>)}
+            </>
+          ) : (
+            <>
+              <p style={{ fontSize: 13, color: C.inkSoft, margin: "0 0 14px" }}>{list.length}문항 · 문항을 누르면 펼쳐지고, 보기를 고르면 해설이 나타납니다</p>
+              {list.map((q) => (<QuestionCard key={q.id} q={q} open={openId === q.id} onToggle={() => setOpenId(openId === q.id ? null : q.id)} />))}
+              {list.length === 0 && (<p style={{ color: C.inkSoft, fontSize: 14 }}>조건에 맞는 문항이 없습니다.</p>)}
+            </>
+          )
+        ) : (
+          <>
+            <p style={{ fontSize: 13, color: C.inkSoft, margin: "0 0 6px" }}>제38~44회 누적 기준 · 주제를 누르면 그 주제의 문항을 연도별로 묶어 스크롤로 볼 수 있습니다 (한국건축사 분석은 과목을 '한국건축사'로 선택)</p>
+            {freq.map(([t, n]) => (<FreqBar key={t} topic={t} count={n} max={maxFreq} active={topicFilter === t}
+              onClick={() => { setTopicFilter(t); setTab("archive"); setSubject("전체"); }} />))}
+          </>
+        )}
+        <footer style={{ marginTop: 40, paddingTop: 14, borderTop: `1px solid ${C.line}` }}>
+          <p style={{ fontSize: 12.5, color: C.inkSoft, lineHeight: 1.7, margin: 0 }}>
+            ※ 문항·보기·정답·주제 태그는 공식 문제지/정답 키에서 추출했습니다. 보기별 해설은 학습용 초안이므로,
+            특히 법령 조문·수치는 국가유산수리 관련 법령 원문으로 반드시 재확인하세요. 회차·문항을 추가하려면
+            questions-data.js의 QUESTIONS 배열에 동일 형식으로 입력하면 됩니다.
+          </p>
+        </footer>
+      </div>
+    </div>
+  );
+}
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<ExamArchive />);
+  </script>
+  <noscript>이 페이지는 자바스크립트가 필요합니다.</noscript>
+</body>
+</html>
