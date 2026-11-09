@@ -92,7 +92,6 @@ details.more{margin-top:12px;border:1px solid var(--line);border-radius:10px}
 details.more>summary{padding:10px 14px;cursor:pointer;font-size:14px;font-weight:600}
 details.more .body{padding:0 14px 14px}
 details.more img{border:1px solid var(--line);border-radius:6px;background:#fff;max-width:100%;display:block}
-pre.rec{margin:0;overflow-x:auto;font:12px/1.5 var(--f-mono);background:var(--sunk);padding:12px;border-radius:8px;white-space:pre}
 .nav{display:flex;gap:8px;margin-top:16px}
 .btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 16px;font-weight:600}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;flex:1}
@@ -177,7 +176,6 @@ pre.rec{margin:0;overflow-x:auto;font:12px/1.5 var(--f-mono);background:var(--su
           <div class="verdict" id="verdict"></div>
           <div class="summary" id="sum" hidden><span class="lbl">핵심 요약 · 교재 해설 기반</span><span id="sumText"></span></div>
           <details class="more" id="expBox"><summary id="expSum">교재 해설 페이지</summary><div class="body" id="exp"></div></details>
-          <details class="more"><summary>이 문항의 통합 레코드</summary><div class="body"><pre class="rec" id="rec"></pre></div></details>
         </div>
         <div class="nav">
           <button class="btn" id="prev">← 이전</button>
@@ -318,8 +316,6 @@ const QIMG = {"2014_01":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBD
     $('sum').hidden = !q.summary; $('sumText').textContent = q.summary;
     $('expSum').textContent = `교재 해설 페이지 ${q.pages.length}쪽` + (q.explanations.length ? '' : ' · 이 문항은 여기서 해설을 확인하세요');
     if (!q.explanations.length && !q.summary) { $('expBox').open = true; loadExp(); }
-    const rec = Object.assign({}, q); delete rec.img;
-    $('rec').textContent = JSON.stringify(rec, null, 2);
     $('after').hidden = false;
   }
   function loadExp(){ const q = byId[st.curId]; if (!$('exp').innerHTML) $('exp').innerHTML = `<img loading="lazy" src="${q.exp}" alt="교재 해설 ${q.pages.length}쪽">`; }
