@@ -1,4 +1,5 @@
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>보수기술자 통합 기출</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -404,7 +405,7 @@ const REFIMG = {};
           `<div class="refpages">${ps.map(([p,c]) => viewable
             ? `<a href="#" data-b="${b}" data-p="${p}" title="PDF ${p}쪽 · ${c}회 등장">p.${p}${c>1?` <b>×${c}</b>`:''}</a>`
             : `<a href="${bk.url}" target="_blank" rel="noopener" title="PDF ${p}쪽 · ${c}회 등장">p.${p}${c>1?` <b>×${c}</b>`:''}</a>`).join('')}</div></div>`;
-      }).join('') + `<p class="refnote">「${esc(t)}」 · ${PRIVATE ? '쪽을 누르면 오른쪽에 그 쪽이 열립니다.' : '쪽수는 PDF 쪽 번호입니다. 드라이브에서 파일을 연 뒤 해당 쪽으로 이동하세요.'} 용어사전·답사수첩·한국건축의 역사는 자동 글자인식이라 일부 쪽이 빠질 수 있습니다.</p>`;
+      }).join('') + `<p class="refnote">「${esc(t)}」 · ${PRIVATE ? '쪽을 누르면 오른쪽에 그 쪽이 열립니다.' : '쪽수는 PDF 쪽 번호입니다. 드라이브에서 파일을 연 뒤 해당 쪽으로 이동하세요. <a href="https://claude.ai/artifact/KgugP24cXb28rveK3cDHi9" target="_blank" rel="noopener"><b>책 쪽 바로 보기(내 계정 전용) ↗</b></a>'} 용어사전·답사수첩·한국건축의 역사는 자동 글자인식이라 일부 쪽이 빠질 수 있습니다.</p>`;
     } else {
       const sug = t.length >= 2 ? REFKEYS.filter(k => k.includes(t) || (t.length >= 3 && t.includes(k) && k.length >= 3)).slice(0,12) : [];
       html = `<p class="refnote">「${esc(t)}」는 색인에 없습니다.` + (sug.length ? ' 비슷한 용어:' : '') + `</p>` +
